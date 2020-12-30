@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+
+      <AnchorPane prefHeight="600.0" prefWidth="400.0"  xmlns:fx="http://javafx.com/fxml" fx:controller="de.astradeni.backupmanager.view.OverviewController">
+            <TextArea fx:id="field"  prefHeight="518.0" prefWidth="336.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+            <Button fx:id="myButton" text="OK" AnchorPane.topAnchor="25.0" AnchorPane.leftAnchor="0.0" />
+      </AnchorPane>
