@@ -1,7 +1,7 @@
 package de.astradeni.backupmanager;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import de.astradeni.backupmanager.service.BackupService;
@@ -63,7 +63,7 @@ public class Manager extends Application {
     			controller.setManager(this);
     			
     			BackupService service = new BackupService();
-    			List<File> fileList = service.calculate();
+    			List<Path> fileList = service.calculate();
     			controller.showFields(fileList);
     			overviewStage.showAndWait();
     			

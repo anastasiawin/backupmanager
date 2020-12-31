@@ -1,10 +1,9 @@
 package de.astradeni.backupmanager.view;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import de.astradeni.backupmanager.Manager;
-import de.astradeni.model.Fields;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -34,10 +33,10 @@ public class OverviewController {
 		this.overviewStage = overviewStage;
 	}
 	
-	public void showFields(List<File> fieldList) {
+	public void showFields(List<Path> fieldList) {
 		String result = "";
-		for (File f : fieldList) {
-			result = (result + f.getName() + "\n").replace("[", "").replace("]", "").replace(",", "");
+		for (Path f : fieldList) {
+			result = (result + f.getFileName() + "\n").replace("[", "").replace("]", "").replace(",", "");
 			field.setText(result);
 		}
 	}
