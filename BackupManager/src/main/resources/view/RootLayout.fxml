@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.TextArea?>
@@ -11,7 +12,11 @@
 			<buttons>
 				<Button fx:id="myButton" minWidth="49.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="25.0" prefWidth="91.0" text="Exit" />
             <Button fx:id="fileButton" mnemonicParsing="false" onAction="#getFiles" text="Files" />
+            <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#getSettings" text="Settings" />
 			</buttons>
+         <BorderPane.margin>
+            <Insets left="25.0" right="25.0" />
+         </BorderPane.margin>
 		</ButtonBar>
 	</top>
 	<bottom>

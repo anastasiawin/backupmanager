@@ -1,64 +1,123 @@
 package de.astradeni.backupmanager.service;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import de.astradeni.backupmanager.model.Fields;
+import de.astradeni.backupmanager.view.SettingsController;
+
 public class BackupService {
+	
+	private static final Logger LOGGER = LogManager.getLogger(BackupService.class);
 
-	public List<Path> calculate() {
+	private File myFolder;
+	
 
-		File myFolder = new File("D:\\Downloads");
+	
+	private SettingsController sc = new SettingsController();
+	
+	public List<Path> calculate() throws Exception {
+		List<Path> newList = new ArrayList<>();
+		for (Fields fields : getArrayOfPaths()) {
+		myFolder = new File(fields.path);
+
 		File[] files = myFolder.listFiles();
-		List<File> list = Arrays.asList(files);
-		List<Path> newList = new ArrayList<Path>();
-		newList = list.stream().map(file -> file.toPath()).filter(path -> {
-			BasicFileAttributes attributes;
-			try {
-				attributes = Files.readAttributes(path, BasicFileAttributes.class);
-				long milliseconds = attributes.creationTime().to(TimeUnit.MILLISECONDS);
-				Date creationDate = new Date(attributes.creationTime().to(TimeUnit.MILLISECONDS));
-				return (creationDate.getYear() + 1900) >= 2020;
-			} catch (IOException exception) {
-				System.out.println(
-						"Exception handled when trying to get file " + "attributes: " + exception.getMessage());
-				return false;
-			}
-		}).collect(Collectors.toList());
-		/*
-		 * for (int i = 0; i < list.size(); i++) { Path filePath = files[i].toPath();
-		 * BasicFileAttributes attributes = null; try { attributes =
-		 * Files.readAttributes(filePath, BasicFileAttributes.class); } catch
-		 * (IOException exception) {
-		 * System.out.println("Exception handled when trying to get file " +
-		 * "attributes: " + exception.getMessage()); }
-		 * 
-		 * long milliseconds = attributes.creationTime().to(TimeUnit.MILLISECONDS);
-		 * 
-		 * String helpString = files[i].toString(); List<String> stringList = new
-		 * ArrayList(); stringList.add(helpString);
-		 * 
-		 * if((milliseconds > Long.MIN_VALUE) && (milliseconds < Long.MAX_VALUE)) { Date
-		 * creationDate = new Date(attributes.creationTime().to(TimeUnit.MILLISECONDS));
-		 * if ((creationDate.getYear() + 1900) >= 2020 ) { newList.add(files[i]);
-		 * stringList.stream().filter(creationDate)
-		 * 
-		 * }
-		 * 
-		 * } }
-		 */
-
-		System.out.println(list.toString());
+		
+				
+		
+		if (files != null) {
+			List<File> list = Arrays.asList(files);
+			
+			newList.addAll(list.stream().map(file -> file.toPath()).filter(path -> {
+				try {
+					BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
+					LocalDateTime borderDate = LocalDateTime.now().minusYears(1);
+					LocalDateTime convertedFileTime = LocalDateTime.ofInstant(attributes.creationTime().toInstant(), ZoneId.systemDefault());
+					return convertedFileTime.isBefore(borderDate);
+				} catch (IOException exception) {
+					LOGGER.error(
+							"Exception handled when trying to get file " + "attributes: " + exception.getMessage());
+					return false;
+				}
+			}).collect(Collectors.toList()));
+	
+			LOGGER.info("List of all recent files " + list.toString());
+		}
+		}
+		
 		return newList;
+		
+
+	}
+	
+	public List<Fields> getArrayOfPaths() throws IOException {
+		
+		List<Fields> pathList = new ArrayList<>();
+		
+		try(BufferedReader br = new BufferedReader(new FileReader("pathtest.txt"))) {
+			pathList.clear();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		    	
+		    	Fields fields = new Fields(line);
+		    	pathList.add(fields);
+		    	line = br.readLine();  
+		    	System.out.println(line);   
+		    }
+		
+		return pathList;
+		
+//		
+		
+	}
 
 	}
 
-}
+	public void appendToFile(String text) throws IOException {
+		Files.write(Paths.get("pathtest.txt"), (text + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
+	}
+		
+		
+	
+	
+	public void deleteFromFile(int index) throws IOException {
+		File inputFile = new File("pathtest.txt");
+		List<Fields> fields = getArrayOfPaths();
+		fields.remove(index);
+
+	    FileWriter fileWriter = new FileWriter(inputFile);
+	    PrintWriter printWriter = new PrintWriter(fileWriter);
+	    for (Fields field:fields) {
+	    	printWriter.println(field.getPath());
+	    }
+	    printWriter.close();
+
+		
+//		text = null;
+//		try {
+//			Files.write(Paths.get("pathtest.txt"),(System.lineSeparator() +  text).getBytes(),StandardOpenOption.APPEND);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		}
+	}
+
